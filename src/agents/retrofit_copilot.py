@@ -1,17 +1,27 @@
-"""Guardrailed LangGraph Retrofit Advisory Copilot with BM25 hybrid retrieval
-over Ofgem ECO4 / GBIS / PAS 2035 rules and a citation-verifier judge node.
+"""Guardrailed LangGraph Retrofit Advisory Copilot with automated statutory
+document ingestion (.pdf/.md/.txt), hybrid BM25 + TF-IDF retrieval over Ofgem
+ECO4 / GBIS / PAS 2035 rules, and a citation-verifier judge node.
 """
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal, TypedDict
 
+import numpy as np
 from langgraph.graph import END, START, StateGraph
+from pypdf import PdfReader
 from rank_bm25 import BM25Okapi
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+logger = logging.getLogger(__name__)
 
 CITATION_PATTERN = re.compile(r"\[([A-Z0-9-]+)\]")
+HEADING_RULE_PATTERN = re.compile(r"^#{1,4}\s*(?:\[([A-Z0-9-]+)\]\s*)?(.*)$")
 
 INJECTION_PATTERNS = [
     r"ignore\s+(all\s+)?previous\s+instructions",
@@ -32,6 +42,7 @@ class PolicyRule:
     text: str
     keywords: tuple[str, ...]
     eligible_epc_bands: tuple[str, ...] = ("A", "B", "C", "D", "E", "F", "G")
+    source_path: str = "builtin_statutory_corpus"
 
 
 POLICY_CORPUS: tuple[PolicyRule, ...] = (
@@ -133,22 +144,197 @@ POLICY_CORPUS: tuple[PolicyRule, ...] = (
     ),
 )
 
+DOMAIN_KEYWORDS = (
+    "eco4",
+    "gbis",
+    "pas 2035",
+    "ventilation",
+    "moisture",
+    "condensation",
+    "damp",
+    "solid",
+    "cavity",
+    "loft",
+    "roof",
+    "unfilled",
+    "flex",
+    "imd",
+    "income",
+    "social",
+    "owner-occupied",
+    "private",
+    "trustmark",
+    "heat pump",
+    "insulation",
+    "coordinator",
+    "risk path",
+)
+
 
 def _tokenize(text: str) -> list[str]:
     return re.findall(r"[a-z0-9]+", text.lower())
 
 
-class HybridPolicyRetriever:
-    """BM25 + regulatory metadata hybrid retriever over Ofgem ECO4, GBIS, and PAS 2035 rules."""
+def _infer_framework(text: str, filename: str) -> Literal["ECO4", "GBIS", "PAS2035"]:
+    combined = f"{filename} {text}".lower()
+    if "pas2035" in combined or "pas 2035" in combined or "ventilation" in combined or "risk path" in combined:
+        return "PAS2035"
+    if "gbis" in combined or "great british insulation" in combined:
+        return "GBIS"
+    return "ECO4"
 
-    def __init__(self, corpus: tuple[PolicyRule, ...] = POLICY_CORPUS) -> None:
-        self.corpus = corpus
-        self._rule_map: dict[str, PolicyRule] = {r.rule_id: r for r in corpus}
-        docs = [
-            _tokenize(f"{r.rule_id} {r.framework} {r.title} {r.text} {' '.join(r.keywords)}")
-            for r in corpus
+
+def _extract_keywords(text: str) -> tuple[str, ...]:
+    lowered = text.lower()
+    matched = [kw for kw in DOMAIN_KEYWORDS if kw in lowered]
+    if not matched:
+        tokens = _tokenize(text)
+        matched = list(dict.fromkeys(tokens[:8]))
+    return tuple(dict.fromkeys(matched))
+
+
+def _infer_epc_bands(text: str) -> tuple[str, ...]:
+    if re.search(r"\bepc\s*(bands?|d-g)\b", text.lower()) or "d, e, f, or g" in text.lower():
+        return ("D", "E", "F", "G")
+    return ("A", "B", "C", "D", "E", "F", "G")
+
+
+def _extract_file_text(file_path: Path) -> str:
+    suffix = file_path.suffix.lower()
+    if suffix == ".pdf":
+        reader = PdfReader(str(file_path))
+        pages = [page.extract_text() or "" for page in reader.pages]
+        return "\n\n".join(pages)
+    if suffix in {".md", ".txt"}:
+        return file_path.read_text(encoding="utf-8")
+    return ""
+
+
+def _chunk_statutory_text(raw_text: str, file_path: Path) -> list[PolicyRule]:
+    """Split raw statutory guidance text into semantic PolicyRule clause chunks."""
+    chunks: list[tuple[str | None, str, str]] = []
+    current_id: str | None = None
+    current_title = file_path.stem.replace("_", " ").title()
+    buffer: list[str] = []
+
+    def _flush() -> None:
+        body = "\n".join(buffer).strip()
+        if len(body) >= 35:
+            chunks.append((current_id, current_title, body))
+        buffer.clear()
+
+    for line in raw_text.splitlines():
+        stripped = line.strip()
+        heading_match = HEADING_RULE_PATTERN.match(stripped)
+        if heading_match:
+            # Skip top-level document H1 banner when it only introduces the file
+            if stripped.startswith("# ") and not heading_match.group(1) and not buffer:
+                continue
+            _flush()
+            current_id = heading_match.group(1)
+            current_title = heading_match.group(2).strip() or current_title
+        elif not stripped and sum(len(x) for x in buffer) >= 450:
+            _flush()
+        elif stripped:
+            buffer.append(stripped)
+
+    _flush()
+
+    # Fallback paragraph chunking if document had no Markdown headings
+    if not chunks and raw_text.strip():
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", raw_text) if len(p.strip()) >= 35]
+        for idx, para in enumerate(paragraphs, start=1):
+            inline_id_match = CITATION_PATTERN.search(para)
+            rule_id = inline_id_match.group(1) if inline_id_match else None
+            first_line = para.splitlines()[0][:80]
+            chunks.append((rule_id, first_line or f"Clause {idx}", para))
+
+    rules: list[PolicyRule] = []
+    for idx, (explicit_id, title, body) in enumerate(chunks, start=1):
+        framework = _infer_framework(f"{title} {body}", file_path.name)
+        if explicit_id:
+            rule_id = explicit_id
+        else:
+            stem_tag = re.sub(r"[^A-Z0-9]+", "", file_path.stem.upper())[:6] or "DOC"
+            rule_id = f"{framework}-{stem_tag}-{idx:02d}"
+        rules.append(
+            PolicyRule(
+                rule_id=rule_id,
+                framework=framework,
+                title=title,
+                text=body,
+                keywords=_extract_keywords(f"{title} {body}"),
+                eligible_epc_bands=_infer_epc_bands(body),
+                source_path=str(file_path),
+            )
+        )
+    return rules
+
+
+def load_regulatory_corpus(docs_dir: Path | str = Path("data/regulatory_docs")) -> tuple[PolicyRule, ...]:
+    """Load and chunk real .pdf / .md / .txt statutory guidance documents from ``docs_dir``,
+    falling back to built-in ``POLICY_CORPUS`` if no files are present or parseable.
+    """
+    target_dir = Path(docs_dir)
+    if not target_dir.exists() or not target_dir.is_dir():
+        return POLICY_CORPUS
+
+    doc_files = sorted(
+        p for p in target_dir.iterdir()
+        if p.is_file() and p.suffix.lower() in {".pdf", ".md", ".txt"}
+    )
+    if not doc_files:
+        return POLICY_CORPUS
+
+    parsed_rules: list[PolicyRule] = []
+    seen_ids: set[str] = set()
+    for doc_file in doc_files:
+        try:
+            text = _extract_file_text(doc_file)
+            for rule in _chunk_statutory_text(text, doc_file):
+                unique_id = rule.rule_id
+                if unique_id in seen_ids:
+                    unique_id = f"{rule.rule_id}-{len(seen_ids) + 1}"
+                    rule = PolicyRule(
+                        rule_id=unique_id,
+                        framework=rule.framework,
+                        title=rule.title,
+                        text=rule.text,
+                        keywords=rule.keywords,
+                        eligible_epc_bands=rule.eligible_epc_bands,
+                        source_path=rule.source_path,
+                    )
+                seen_ids.add(unique_id)
+                parsed_rules.append(rule)
+        except Exception as exc:
+            logger.warning("Failed to parse statutory guidance '%s': %s", doc_file, exc)
+
+    if not parsed_rules:
+        return POLICY_CORPUS
+    return tuple(parsed_rules)
+
+
+class HybridPolicyRetriever:
+    """Hybrid BM25 + TF-IDF cosine + regulatory metadata retriever over Ofgem ECO4,
+    GBIS, and PAS 2035 statutory guidance chunks.
+    """
+
+    def __init__(
+        self,
+        corpus: tuple[PolicyRule, ...] | None = None,
+        docs_dir: Path | str = Path("data/regulatory_docs"),
+    ) -> None:
+        self.corpus = corpus if corpus is not None else load_regulatory_corpus(docs_dir=docs_dir)
+        self._rule_map: dict[str, PolicyRule] = {r.rule_id: r for r in self.corpus}
+
+        raw_texts = [
+            f"{r.rule_id} {r.framework} {r.title} {r.text} {' '.join(r.keywords)}"
+            for r in self.corpus
         ]
-        self._bm25 = BM25Okapi(docs)
+        docs_tokens = [_tokenize(txt) for txt in raw_texts]
+        self._bm25 = BM25Okapi(docs_tokens)
+        self._tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words="english")
+        self._tfidf_matrix = self._tfidf.fit_transform(raw_texts)
 
     def get_rule(self, rule_id: str) -> PolicyRule | None:
         return self._rule_map.get(rule_id)
@@ -159,7 +345,7 @@ class HybridPolicyRetriever:
         property_profile: dict[str, Any] | None = None,
         top_k: int = 5,
     ) -> list[dict[str, Any]]:
-        """Retrieve top-k policy rules combining BM25 scores and property-context boosts."""
+        """Retrieve top-k policy rules combining BM25, TF-IDF cosine, and metadata boosts."""
         profile = property_profile or {}
         epc_band = str(profile.get("current_energy_rating", "")).upper().strip()
         wall_type = str(profile.get("wall_type", "")).lower()
@@ -180,17 +366,23 @@ class HybridPolicyRetriever:
             ]
         )
         tokens = _tokenize(enriched_query)
-        bm25_scores = self._bm25.get_scores(tokens)
-        max_bm25 = max(float(max(bm25_scores)), 1e-6)
+        bm25_scores = np.asarray(self._bm25.get_scores(tokens), dtype=float)
+        max_bm25 = max(float(np.max(bm25_scores)), 1e-6)
+
+        q_vec = self._tfidf.transform([enriched_query])
+        tfidf_scores = cosine_similarity(q_vec, self._tfidf_matrix).ravel()
+        max_tfidf = max(float(np.max(tfidf_scores)), 1e-6)
 
         scored: list[tuple[float, PolicyRule]] = []
         for idx, rule in enumerate(self.corpus):
-            lexical_norm = float(bm25_scores[idx]) / max_bm25
+            bm25_norm = float(bm25_scores[idx]) / max_bm25
+            tfidf_norm = float(tfidf_scores[idx]) / max_tfidf
+
             meta_boost = 0.0
             if epc_band and epc_band in rule.eligible_epc_bands:
                 meta_boost += 0.20
             if rule.framework == "PAS2035":
-                meta_boost += 0.25  # Always surface mandatory PAS 2035 safety/ventilation rules
+                meta_boost += 0.25
             if "solid" in wall_type and "solid" in " ".join(rule.keywords):
                 meta_boost += 0.25
             if "unfilled" in wall_type and "cavity" in " ".join(rule.keywords):
@@ -202,7 +394,10 @@ class HybridPolicyRetriever:
             if "social" in tenure and "social" in " ".join(rule.keywords):
                 meta_boost += 0.25
 
-            total_score = round(0.65 * lexical_norm + 0.35 * min(meta_boost, 1.0), 4)
+            total_score = round(
+                0.45 * bm25_norm + 0.30 * tfidf_norm + 0.25 * min(meta_boost, 1.0),
+                4,
+            )
             scored.append((total_score, rule))
 
         scored.sort(key=lambda item: item[0], reverse=True)
@@ -212,6 +407,7 @@ class HybridPolicyRetriever:
                 "framework": rule.framework,
                 "title": rule.title,
                 "text": rule.text,
+                "source_path": rule.source_path,
                 "score": score,
             }
             for score, rule in scored[:top_k]
@@ -239,7 +435,6 @@ def verify_citations_against_rules(
             f"Unverified or hallucinated citations detected: {unknown_ids}",
         )
 
-    # Ensure PAS 2035 compliance is cited when insulation measures are recommended
     mentions_insulation = any(
         term in draft_text.lower() for term in ("wall insulation", "loft", "cavity", "solid wall")
     )
@@ -317,7 +512,6 @@ def build_retrofit_copilot_graph(
         rule_ids = {r["rule_id"] for r in rules}
         retry_count = int(state.get("retry_count", 0))
 
-        # Test hook to exercise judge rejection -> retry loop when requested
         if force_unverified_first_draft and retry_count == 0:
             return {
                 "draft_advice": "Install external wall insulation under [ECO4-FAKE-999].",
@@ -417,7 +611,6 @@ def build_retrofit_copilot_graph(
         if not measures:
             measures.append("Smart Heating Controls & Draught-Proofing")
 
-        # Guarantee at least one retrieved citation if none matched above
         if not CITATION_PATTERN.findall("\n".join(bullets)) and rules:
             fallback_id = rules[0]["rule_id"]
             bullets.append(f"- **Regulatory Reference:** Assessed under [{fallback_id}].")
@@ -532,9 +725,14 @@ def run_retrofit_copilot(
     query: str,
     property_profile: dict[str, Any],
     force_unverified_first_draft: bool = False,
+    docs_dir: Path | str = Path("data/regulatory_docs"),
 ) -> dict[str, Any]:
     """Execute the guardrailed LangGraph retrofit copilot and return its structured response."""
-    app = build_retrofit_copilot_graph(force_unverified_first_draft=force_unverified_first_draft)
+    retriever = HybridPolicyRetriever(docs_dir=docs_dir)
+    app = build_retrofit_copilot_graph(
+        retriever=retriever,
+        force_unverified_first_draft=force_unverified_first_draft,
+    )
     result = app.invoke(
         {
             "query": query,

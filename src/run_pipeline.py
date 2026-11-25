@@ -1,9 +1,12 @@
-"""End-to-end GridGuard UK pipeline runner generating realistic UK DESNZ EPC +
-ONS IMD synthetic data (with 3% corrupt rows to exercise Parquet quarantine).
+"""End-to-end GridGuard UK pipeline runner supporting live Postcodes.io + DESNZ EPC
+open data enrichment (``--live``, default) with automatic fallback, plus synthetic
+offline DESNZ EPC + ONS IMD generation (``--no-live``).
 """
 
 from __future__ import annotations
 
+import argparse
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +16,7 @@ from src.agents.retrofit_copilot import run_retrofit_copilot
 from src.analytics.spatial_uplift import estimate_spatial_uplift
 from src.evaluation.error_analysis import generate_error_analysis_report
 from src.ingestion.epc_pipeline import ingest_epc_data
+from src.ingestion.live_uk_connectors import fetch_live_ons_and_epc_data
 from src.models.train_conformal import train_conformal_model
 
 LOCAL_AUTHORITIES: dict[str, tuple[str, float]] = {
@@ -141,7 +145,6 @@ def generate_synthetic_uk_epc_dataset(
         2,
     )
 
-    # Treatment assignment & heterogeneous causal bill savings (for T-Learner)
     treat_prob = np.clip(0.25 + 0.18 * (current_sap < 60) + 0.12 * (imd_deciles_arr <= 3), 0.1, 0.85)
     retrofit_treated = rng.binomial(1, treat_prob)
     true_savings = (
@@ -209,6 +212,9 @@ def generate_synthetic_uk_epc_dataset(
 
 
 def run_end_to_end(
+    live: bool = True,
+    postcode_prefix: str = "L1",
+    limit: int = 500,
     n_rows: int = 1000,
     corrupt_fraction: float = 0.03,
     data_dir: Path = Path("data"),
@@ -220,8 +226,17 @@ def run_end_to_end(
     quarantine_dir = data_dir / "quarantine"
     raw_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_df = generate_synthetic_uk_epc_dataset(n_rows=n_rows, corrupt_fraction=corrupt_fraction)
-    raw_csv_path = raw_dir / "synthetic_desnz_epc_imd.csv"
+    if live:
+        raw_df = fetch_live_ons_and_epc_data(
+            postcode_prefix=postcode_prefix,
+            limit=limit,
+            quarantine_dir=quarantine_dir,
+        )
+        raw_csv_path = raw_dir / f"live_uk_epc_{postcode_prefix.lower()}.csv"
+    else:
+        raw_df = generate_synthetic_uk_epc_dataset(n_rows=n_rows, corrupt_fraction=corrupt_fraction)
+        raw_csv_path = raw_dir / "synthetic_desnz_epc_imd.csv"
+
     raw_df.to_csv(raw_csv_path, index=False)
 
     db_path = processed_dir / "gridguard.duckdb"
@@ -256,9 +271,19 @@ def run_end_to_end(
             "imd_decile": 2,
             "household_income_gbp": 22500.0,
         },
+        docs_dir=data_dir / "regulatory_docs",
     )
 
-    print("=== GridGuard UK End-to-End Pipeline Complete ===")
+    mode_label = f"LIVE ({postcode_prefix})" if live else "SYNTHETIC OFFLINE"
+    sources = (
+        sorted(ingestion_res.clean_df["data_source"].unique().tolist())
+        if "data_source" in ingestion_res.clean_df.columns
+        else ["synthetic_desnz_epc_imd"]
+    )
+
+    print(f"=== GridGuard UK End-to-End Pipeline Complete [{mode_label}] ===")
+    print(f"Data Sources:         {sources}")
+    print(f"Distinct LAs / LSOAs: {ingestion_res.clean_df['local_authority'].nunique()} / {ingestion_res.clean_df['lsoa_code'].nunique()}")
     print(f"Total raw rows:       {ingestion_res.total_rows}")
     print(f"Clean rows in DuckDB: {ingestion_res.clean_rows}")
     print(f"Quarantined rows:     {ingestion_res.quarantined_rows} ({ingestion_res.quarantine_path})")
@@ -276,5 +301,29 @@ def run_end_to_end(
     }
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the GridGuard UK end-to-end intelligence pipeline.")
+    parser.add_argument(
+        "--live",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enrich with live Postcodes.io + DESNZ EPC API feeds (default: True; use --no-live for synthetic mode).",
+    )
+    parser.add_argument(
+        "--postcode-prefix",
+        default="L1",
+        help="UK postcode prefix for live Postcodes.io / DESNZ EPC retrieval (default: L1).",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=500,
+        help="Maximum number of live records to ingest (default: 500).",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    run_end_to_end()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    args = _parse_args()
+    run_end_to_end(live=args.live, postcode_prefix=args.postcode_prefix, limit=args.limit)

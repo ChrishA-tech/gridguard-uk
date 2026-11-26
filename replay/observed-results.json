@@ -1,0 +1,84 @@
+{
+  "source": "DESNZ NEED 2026 anonymised 50,000-property sample",
+  "metric": "MAE in kWh/year",
+  "baseline": "Pooled median proportional gas change",
+  "candidate": "Median proportional gas change by property type",
+  "fit_through_install_year": 2015,
+  "training_properties": 3679,
+  "holdout_install_years": [
+    2018,
+    2023
+  ],
+  "metrics": {
+    "cases": 64,
+    "baseline_loss": 3716.34375,
+    "candidate_loss": 3739.370174,
+    "candidate_wins": 31,
+    "baseline_wins": 33,
+    "ties": 0,
+    "largest_candidate_disadvantage": 434.0,
+    "worst_case": "2021 / End terrace / case 34"
+  },
+  "by_property_type": {
+    "Bungalow": {
+      "cases": 6,
+      "baseline_loss": 4920.111111,
+      "candidate_loss": 4931.884148,
+      "candidate_wins": 2,
+      "baseline_wins": 4,
+      "ties": 0,
+      "largest_candidate_disadvantage": 179.459265,
+      "worst_case": "2018 / Bungalow / case 6"
+    },
+    "Detached": {
+      "cases": 4,
+      "baseline_loss": 3906.833333,
+      "candidate_loss": 4000.378788,
+      "candidate_wins": 1,
+      "baseline_wins": 3,
+      "ties": 0,
+      "largest_candidate_disadvantage": 236.727273,
+      "worst_case": "2018 / Detached / case 5"
+    },
+    "End terrace": {
+      "cases": 6,
+      "baseline_loss": 2046.666667,
+      "candidate_loss": 2223.809524,
+      "candidate_wins": 1,
+      "baseline_wins": 5,
+      "ties": 0,
+      "largest_candidate_disadvantage": 434.0,
+      "worst_case": "2021 / End terrace / case 34"
+    },
+    "Flat": {
+      "cases": 1,
+      "baseline_loss": 638.0,
+      "candidate_loss": 665.625,
+      "candidate_wins": 0,
+      "baseline_wins": 1,
+      "ties": 0,
+      "largest_candidate_disadvantage": 27.625,
+      "worst_case": "2021 / Flat / case 22"
+    },
+    "Mid terrace": {
+      "cases": 29,
+      "baseline_loss": 4030.551724,
+      "candidate_loss": 4044.714302,
+      "candidate_wins": 13,
+      "baseline_wins": 16,
+      "ties": 0,
+      "largest_candidate_disadvantage": 160.423077,
+      "worst_case": "2020 / Mid terrace / case 12"
+    },
+    "Semi detached": {
+      "cases": 18,
+      "baseline_loss": 3494.111111,
+      "candidate_loss": 3467.870789,
+      "candidate_wins": 14,
+      "baseline_wins": 4,
+      "ties": 0,
+      "largest_candidate_disadvantage": 56.620649,
+      "worst_case": "2018 / Semi detached / case 7"
+    }
+  }
+}

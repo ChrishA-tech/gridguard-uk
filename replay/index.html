@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UK Decision Replay | Chrish Pep Felix A</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.5 system-ui,sans-serif;--surface:#fff;--ink:#142239;--sub:#4f5f74;--bg:#eef3fa;--line:#d8e2ef;--blue:#075ec9;--candidate:#0669cc;--base:#77879c}
+@media(prefers-color-scheme:dark){:root{--surface:#152134;--ink:#f2f6ff;--sub:#b1c1d6;--bg:#0d1524;--line:#344761;--blue:#9bc7ff;--candidate:#69b4ff;--base:#a3b0c0}}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--bg)}main,nav{max-width:1152px;margin:auto;padding:0 26px}nav{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-block:22px}a{color:var(--blue);text-underline-offset:4px}h1,h2,p{margin:0}h1{font-size:clamp(3.1rem,8vw,6.7rem);line-height:1;letter-spacing:-.075em;margin:.2em 0}h2{font-size:1.32rem;letter-spacing:-.02em}.lead{font-size:1.2rem;max-width:38rem;color:var(--sub)}.hero{padding:48px 0 35px;border-top:1px solid var(--line)}.domain{color:var(--blue);font-weight:700}.panel{padding:22px;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:0 10px 30px #182a4510}.filters,.scores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}.scores strong{display:block;font-size:2.1rem;letter-spacing:-.04em}.muted,.panel p{color:var(--sub)}.panel p{margin-top:6px}label{display:grid;gap:5px;font-weight:650}select,button{width:100%;font:inherit;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:10px 12px}button{width:auto;cursor:pointer}button:disabled{opacity:.5;cursor:default}button:hover:not(:disabled){border-color:var(--blue)}.chart{padding-bottom:14px}.chart canvas{width:100%;height:255px;display:block;margin-top:12px}.legend{display:flex;gap:18px;font-weight:650;flex-wrap:wrap}.legend span::before{content:'';display:inline-block;width:.8rem;height:.5rem;border-radius:4px;background:var(--base);margin-right:7px}.legend span+span::before{background:var(--candidate)}.details{margin:16px 0 44px}.details table{width:100%;border-collapse:collapse;text-align:left;margin-top:12px}td,th{padding:9px;border-bottom:1px solid var(--line)}.scroll{overflow:auto}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.scope{border-left:3px solid var(--blue);padding-left:12px;margin:14px 0}.state{margin-top:12px}.hidden{display:none}@media(max-width:670px){main,nav{padding-inline:16px}.filters{grid-template-columns:1fr}.scores{gap:6px}.scores .panel{padding:10px}.scores strong{font-size:1.5rem}.hero{padding-block:32px}.chart canvas{height:210px}}
+</style>
+</head>
+<body>
+<nav><a href="https://chrisha-tech.github.io/">Chrish Pep Felix A</a><a id="repo" href="https://github.com/ChrishA-tech">GitHub repository</a></nav>
+<main>
+<header class="hero"><p class="domain" id="domain">Interactive portfolio</p><h1 id="title">UK Decision Replay</h1><p id="subtitle" class="lead"></p></header>
+<p id="failure" role="alert" class="panel hidden"></p>
+<div id="interactive" class="hidden">
+<div class="filters panel">
+<label>Project<select id="project"></select></label>
+<label>Region or group<select id="group"></select></label>
+<label>Scenario<select id="scenario"></select></label>
+</div>
+<p id="scope" class="scope"></p>
+<section class="scores" aria-label="Results" aria-live="polite">
+<div class="panel"><span id="base-label"></span><strong id="baseline"></strong><span class="muted" id="units"></span></div>
+<div class="panel"><span id="candidate-label"></span><strong id="candidate"></strong><span class="muted">Lower is better</span></div>
+<div class="panel"><span>Candidate wins</span><strong id="wins"></strong><span class="muted" id="count"></span></div>
+</section>
+<section class="panel chart">
+<div class="row"><h2>Replay by case</h2><button id="download" type="button">Export visible cases</button></div>
+<canvas id="chart" role="img" aria-label="Baseline and candidate scores by replay case. Values are available in the table."></canvas>
+<div class="legend"><span id="base-legend"></span><span id="candidate-legend"></span></div>
+<p class="state" id="status" aria-live="polite"></p>
+</section>
+<section class="panel details">
+<h2>Where the candidate struggled</h2>
+<p id="analysis"></p>
+<div class="scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Group</th><th scope="col">Scenario</th><th scope="col">Baseline</th><th scope="col">Candidate</th></tr></thead><tbody id="cases"></tbody></table></div>
+</section>
+</div>
+<noscript><p class="panel">Enable JavaScript to explore the replay. The source and benchmark documentation are available on GitHub.</p></noscript>
+</main>
+<script id="data" type="application/json">[{"config": {"slug": "gridguard-uk", "name": "GridGuard UK", "domain": "Housing retrofit", "subtitle": "Explore how retrofit savings estimates change across neighbourhood scenarios.", "units": "£ annual absolute error", "baseline": "Simple estimate", "candidate": "Scenario-adjusted estimate", "stress": "Cold homes", "groups": ["Urban", "Suburban", "Rural"], "note": "The replay compares two estimates against a simulated annual outcome. It does not estimate realised household savings or validate treatment effects. EPC-based targeting and constrained budget allocation remain separate work."}, "provenance": "Deterministic synthetic scenarios", "cases": [{"period": 1, "group": "Urban", "scenario": "Typical", "baseline": 124.97874, "candidate": 9.14859}, {"period": 2, "group": "Suburban", "scenario": "Typical", "baseline": 132.23486, "candidate": 39.11751}, {"period": 3, "group": "Rural", "scenario": "Typical", "baseline": 26.71427, "candidate": 17.91689}, {"period": 4, "group": "Urban", "scenario": "Cold homes", "baseline": 102.75617, "candidate": 109.2253}, {"period": 5, "group": "Suburban", "scenario": "Cold homes", "baseline": 10.18289, "candidate": 95.74333}, {"period": 6, "group": "Rural", "scenario": "Cold homes", "baseline": 141.47173, "candidate": 6.35683}, {"period": 7, "group": "Urban", "scenario": "Feed degraded", "baseline": 42.56011, "candidate": 42.56011}, {"period": 8, "group": "Suburban", "scenario": "Feed degraded", "baseline": 185.66995, "candidate": 185.66995}, {"period": 9, "group": "Rural", "scenario": "Feed degraded", "baseline": 296.50065, "candidate": 296.50065}, {"period": 10, "group": "Urban", "scenario": "Typical", "baseline": 60.91253, "candidate": 26.45886}, {"period": 11, "group": "Suburban", "scenario": "Typical", "baseline": 82.22017, "candidate": 102.27893}, {"period": 12, "group": "Rural", "scenario": "Typical", "baseline": 72.11318, "candidate": 76.17127}, {"period": 13, "group": "Urban", "scenario": "Cold homes", "baseline": 62.26577, "candidate": 5.80256}, {"period": 14, "group": "Suburban", "scenario": "Cold homes", "baseline": 130.91812, "candidate": 19.20032}, {"period": 15, "group": "Rural", "scenario": "Cold homes", "baseline": 11.76746, "candidate": 33.71882}, {"period": 16, "group": "Urban", "scenario": "Feed degraded", "baseline": 2.46886, "candidate": 2.46886}, {"period": 17, "group": "Suburban", "scenario": "Feed degraded", "baseline": 66.28613, "candidate": 66.28613}, {"period": 18, "group": "Rural", "scenario": "Feed degraded", "baseline": 73.2921, "candidate": 73.2921}, {"period": 19, "group": "Urban", "scenario": "Typical", "baseline": 15.94342, "candidate": 115.98325}, {"period": 20, "group": "Suburban", "scenario": "Typical", "baseline": 88.41249, "candidate": 57.29909}, {"period": 21, "group": "Rural", "scenario": "Typical", "baseline": 131.60733, "candidate": 4.93055}, {"period": 22, "group": "Urban", "scenario": "Cold homes", "baseline": 211.71837, "candidate": 152.15059}, {"period": 23, "group": "Suburban", "scenario": "Cold homes", "baseline": 41.70729, "candidate": 24.64247}, {"period": 24, "group": "Rural", "scenario": "Cold homes", "baseline": 8.63194, "candidate": 2.97614}, {"period": 25, "group": "Urban", "scenario": "Feed degraded", "baseline": 77.34069, "candidate": 77.34069}, {"period": 26, "group": "Suburban", "scenario": "Feed degraded", "baseline": 41.84266, "candidate": 41.84266}, {"period": 27, "group": "Rural", "scenario": "Feed degraded", "baseline": 94.04943, "candidate": 94.04943}, {"period": 28, "group": "Urban", "scenario": "Typical", "baseline": 180.84634, "candidate": 194.88752}, {"period": 29, "group": "Suburban", "scenario": "Typical", "baseline": 171.78981, "candidate": 87.51817}, {"period": 30, "group": "Rural", "scenario": "Typical", "baseline": 210.59023, "candidate": 64.54659}, {"period": 31, "group": "Urban", "scenario": "Cold homes", "baseline": 89.6754, "candidate": 19.82825}, {"period": 32, "group": "Suburban", "scenario": "Cold homes", "baseline": 5.27407, "candidate": 9.64669}, {"period": 33, "group": "Rural", "scenario": "Cold homes", "baseline": 66.29425, "candidate": 29.14459}, {"period": 34, "group": "Urban", "scenario": "Feed degraded", "baseline": 161.01185, "candidate": 161.01185}, {"period": 35, "group": "Suburban", "scenario": "Feed degraded", "baseline": 143.84001, "candidate": 143.84001}, {"period": 36, "group": "Rural", "scenario": "Feed degraded", "baseline": 55.57646, "candidate": 55.57646}, {"period": 37, "group": "Urban", "scenario": "Typical", "baseline": 117.61466, "candidate": 23.87848}, {"period": 38, "group": "Suburban", "scenario": "Typical", "baseline": 13.56003, "candidate": 59.23894}, {"period": 39, "group": "Rural", "scenario": "Typical", "baseline": 77.62953, "candidate": 17.16846}, {"period": 40, "group": "Urban", "scenario": "Cold homes", "baseline": 89.07277, "candidate": 1.09576}, {"period": 41, "group": "Suburban", "scenario": "Cold homes", "baseline": 167.55291, "candidate": 86.5281}, {"period": 42, "group": "Rural", "scenario": "Cold homes", "baseline": 107.20304, "candidate": 19.69362}, {"period": 43, "group": "Urban", "scenario": "Feed degraded", "baseline": 32.51739, "candidate": 32.51739}, {"period": 44, "group": "Suburban", "scenario": "Feed degraded", "baseline": 53.78693, "candidate": 53.78693}, {"period": 45, "group": "Rural", "scenario": "Feed degraded", "baseline": 45.96927, "candidate": 45.96927}, {"period": 46, "group": "Urban", "scenario": "Typical", "baseline": 87.33924, "candidate": 20.98469}, {"period": 47, "group": "Suburban", "scenario": "Typical", "baseline": 24.03859, "candidate": 14.1168}, {"period": 48, "group": "Rural", "scenario": "Typical", "baseline": 117.13976, "candidate": 22.78901}, {"period": 49, "group": "Urban", "scenario": "Cold homes", "baseline": 102.35939, "candidate": 97.23838}, {"period": 50, "group": "Suburban", "scenario": "Cold homes", "baseline": 76.11678, "candidate": 10.50651}, {"period": 51, "group": "Rural", "scenario": "Cold homes", "baseline": 73.68267, "candidate": 70.15447}, {"period": 52, "group": "Urban", "scenario": "Feed degraded", "baseline": 112.95755, "candidate": 112.95755}, {"period": 53, "group": "Suburban", "scenario": "Feed degraded", "baseline": 34.90974, "candidate": 34.90974}, {"period": 54, "group": "Rural", "scenario": "Feed degraded", "baseline": 3.8497, "candidate": 3.8497}, {"period": 55, "group": "Urban", "scenario": "Typical", "baseline": 93.24728, "candidate": 56.45284}, {"period": 56, "group": "Suburban", "scenario": "Typical", "baseline": 42.39427, "candidate": 19.84428}, {"period": 57, "group": "Rural", "scenario": "Typical", "baseline": 154.89924, "candidate": 62.55266}, {"period": 58, "group": "Urban", "scenario": "Cold homes", "baseline": 114.13095, "candidate": 10.96372}, {"period": 59, "group": "Suburban", "scenario": "Cold homes", "baseline": 10.78643, "candidate": 97.6898}, {"period": 60, "group": "Rural", "scenario": "Cold homes", "baseline": 100.88221, "candidate": 12.63167}, {"period": 61, "group": "Urban", "scenario": "Feed degraded", "baseline": 174.09187, "candidate": 174.09187}, {"period": 62, "group": "Suburban", "scenario": "Feed degraded", "baseline": 46.26861, "candidate": 46.26861}, {"period": 63, "group": "Rural", "scenario": "Feed degraded", "baseline": 3.41599, "candidate": 3.41599}, {"period": 64, "group": "Urban", "scenario": "Typical", "baseline": 100.93016, "candidate": 67.0823}, {"period": 65, "group": "Suburban", "scenario": "Typical", "baseline": 218.74898, "candidate": 141.3363}, {"period": 66, "group": "Rural", "scenario": "Typical", "baseline": 113.27862, "candidate": 2.5217}, {"period": 67, "group": "Urban", "scenario": "Cold homes", "baseline": 40.71468, "candidate": 24.65452}, {"period": 68, "group": "Suburban", "scenario": "Cold homes", "baseline": 127.90909, "candidate": 105.78401}, {"period": 69, "group": "Rural", "scenario": "Cold homes", "baseline": 198.25067, "candidate": 84.44994}, {"period": 70, "group": "Urban", "scenario": "Feed degraded", "baseline": 123.41104, "candidate": 123.41104}, {"period": 71, "group": "Suburban", "scenario": "Feed degraded", "baseline": 123.79764, "candidate": 123.79764}, {"period": 72, "group": "Rural", "scenario": "Feed degraded", "baseline": 0.21567, "candidate": 0.21567}, {"period": 73, "group": "Urban", "scenario": "Typical", "baseline": 24.16078, "candidate": 32.39895}, {"period": 74, "group": "Suburban", "scenario": "Typical", "baseline": 114.75305, "candidate": 0.59559}, {"period": 75, "group": "Rural", "scenario": "Typical", "baseline": 42.11001, "candidate": 10.19763}, {"period": 76, "group": "Urban", "scenario": "Cold homes", "baseline": 22.09941, "candidate": 19.68235}, {"period": 77, "group": "Suburban", "scenario": "Cold homes", "baseline": 65.91574, "candidate": 25.39389}, {"period": 78, "group": "Rural", "scenario": "Cold homes", "baseline": 197.45942, "candidate": 70.43739}, {"period": 79, "group": "Urban", "scenario": "Feed degraded", "baseline": 85.66466, "candidate": 85.66466}, {"period": 80, "group": "Suburban", "scenario": "Feed degraded", "baseline": 161.48859, "candidate": 161.48859}, {"period": 81, "group": "Rural", "scenario": "Feed degraded", "baseline": 61.77066, "candidate": 61.77066}, {"period": 82, "group": "Urban", "scenario": "Typical", "baseline": 51.34637, "candidate": 141.30071}, {"period": 83, "group": "Suburban", "scenario": "Typical", "baseline": 119.17513, "candidate": 45.88323}, {"period": 84, "group": "Rural", "scenario": "Typical", "baseline": 157.76487, "candidate": 10.63957}], "baseline_mean": 91.06961630952381, "candidate_mean": 60.656352261904765}]</script>
+<script>
+'use strict';
+const el = id => document.getElementById(id);
+const number = new Intl.NumberFormat('en-GB',{maximumFractionDigits:3});
+const fmt = value => Number.isFinite(value) ? number.format(value) : '—';
+let catalogue, selected, cases=[];
+function options(target, entries) {
+  target.replaceChildren(...entries.map(([value,label]) => new Option(label,value)));
+}
+function plot() {
+  const canvas=el('chart'), ctx=canvas.getContext('2d');
+  if (!ctx) return;
+  const w=canvas.clientWidth,h=canvas.clientHeight, scale=window.devicePixelRatio || 1;
+  canvas.width=w*scale; canvas.height=h*scale; ctx.scale(scale,scale);
+  if (!cases.length || w<65) return;
+  const colors=getComputedStyle(document.documentElement);
+  const yValues=cases.flatMap(row=>[row.baseline,row.candidate]);
+  const min=Math.min(0,...yValues), max=Math.max(...yValues,min+.001);
+  const x=i=>44+(w-56)*(cases.length===1 ? .5 : i/(cases.length-1));
+  const y=v=>h-22-(h-38)*(v-min)/(max-min);
+  ctx.font='12px system-ui';
+  for(let i=0;i<=4;i++){
+    const v=min+(max-min)*i/4;
+    ctx.strokeStyle=colors.getPropertyValue('--line'); ctx.beginPath();ctx.moveTo(44,y(v));ctx.lineTo(w-12,y(v));ctx.stroke();
+    ctx.fillStyle=colors.getPropertyValue('--sub');ctx.fillText(fmt(v),0,y(v)+4);
+  }
+  for(const [key,variable] of [['baseline','--base'],['candidate','--candidate']]){
+    ctx.strokeStyle=ctx.fillStyle=colors.getPropertyValue(variable);ctx.lineWidth=2;
+    ctx.beginPath();cases.forEach((row,i)=>i?ctx.lineTo(x(i),y(row[key])):ctx.moveTo(x(i),y(row[key])));ctx.stroke();
+    if(cases.length===1){ctx.beginPath();ctx.arc(x(0),y(cases[0][key]),4,0,Math.PI*2);ctx.fill();}
+  }
+}
+function render() {
+  const group=el('group').value, scenario=el('scenario').value;
+  cases=selected.cases.filter(row=>(!group||row.group===group)&&(!scenario||row.scenario===scenario));
+  const mean=key=>cases.length?cases.reduce((sum,row)=>sum+row[key],0)/cases.length:NaN;
+  const wins=cases.filter(row=>row.candidate<row.baseline-1e-8).length;
+  const losses=cases.filter(row=>row.candidate>row.baseline+1e-8).sort((a,b)=>(b.candidate-b.baseline)-(a.candidate-a.baseline));
+  el('baseline').textContent=fmt(mean('baseline'));el('candidate').textContent=fmt(mean('candidate'));
+  el('wins').textContent=cases.length?Math.round(100*wins/cases.length)+'%':'—';
+  el('count').textContent=cases.length+' replay cases';
+  el('status').textContent=cases.length?selected.provenance:'No cases match these filters. Choose another group or scenario.';
+  const worst=losses[0];
+  el('analysis').textContent=worst?`The candidate scored worse in ${losses.length} of ${cases.length} cases. The largest gap was ${fmt(worst.candidate-worst.baseline)} in case ${worst.period} (${worst.scenario}, ${worst.group}).`:cases.length?'The candidate had no higher scores in this selection. Check other scenarios to see where it loses.':'Change the filters to inspect results.';
+  el('download').disabled = !cases.length;
+  el('cases').replaceChildren(...(losses.length?losses:cases).slice(0,5).map(row=>{
+    const tr=document.createElement('tr');
+    for(const value of [row.period,row.group,row.scenario,fmt(row.baseline),fmt(row.candidate)]) tr.insertCell().textContent=value;
+    return tr;
+  }));
+  plot();
+}
+function setProject() {
+  selected=catalogue.find(row=>row.config.slug===el('project').value) || catalogue[0];
+  const c=selected.config;
+  for(const [id,value] of Object.entries({title:c.name,domain:c.domain,subtitle:c.subtitle,scope:c.note,units:c.units,'base-label':c.baseline,'base-legend':c.baseline,'candidate-label':c.candidate,'candidate-legend':c.candidate})) el(id).textContent=value;
+  el('repo').href='https://github.com/ChrishA-tech/'+c.slug;
+  options(el('group'),[['','All groups'],...[...new Set(selected.cases.map(row=>row.group))].map(value=>[value,value])]);
+  options(el('scenario'),[['','All scenarios'],...[...new Set(selected.cases.map(row=>row.scenario))].map(value=>[value,value])]);
+  render();
+}
+try {
+  catalogue=JSON.parse(el('data').textContent);
+  if(!Array.isArray(catalogue)||!catalogue.length||catalogue.some(item=>!item.config||!Array.isArray(item.cases))) throw Error('Invalid replay data');
+  options(el('project'),catalogue.map(row=>[row.config.slug,row.config.name]));
+  const requested=new URLSearchParams(location.search).get('project');
+  if(catalogue.some(row=>row.config.slug===requested)) el('project').value=requested;
+  el('interactive').classList.remove('hidden');
+  setProject();
+  el('project').addEventListener('change',setProject);
+  ['group','scenario'].forEach(id=>el(id).addEventListener('change',render));
+  window.addEventListener('resize',plot);
+  el('download').addEventListener('click',()=>{
+    const quote=value=>'"'+String(value).replaceAll('"','""')+'"';
+    const lines=cases.map(row=>[row.period,row.group,row.scenario,row.baseline,row.candidate,selected.provenance].map(quote).join(','));
+    const url=URL.createObjectURL(new Blob(['case,group,scenario,baseline_score,candidate_score,provenance\n'+lines.join('\n')],{type:'text/csv'}));
+    const link=document.createElement('a');link.href=url;link.download=selected.config.slug+'-replay.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+} catch(error) {
+  el('interactive').classList.add('hidden');
+  el('failure').textContent='Replay data could not be loaded. Reload the page or check the repository for a fresh dashboard.';
+  el('failure').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

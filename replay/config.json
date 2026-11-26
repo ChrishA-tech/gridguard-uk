@@ -1,0 +1,16 @@
+{
+  "slug": "gridguard-uk",
+  "name": "GridGuard UK",
+  "domain": "Housing retrofit",
+  "subtitle": "Explore how retrofit savings estimates change across neighbourhood scenarios.",
+  "units": "£ annual absolute error",
+  "baseline": "Simple estimate",
+  "candidate": "Scenario-adjusted estimate",
+  "stress": "Cold homes",
+  "groups": [
+    "Urban",
+    "Suburban",
+    "Rural"
+  ],
+  "note": "The replay compares two estimates against a simulated annual outcome. It does not estimate realised household savings or validate treatment effects. EPC-based targeting and constrained budget allocation remain separate work."
+}

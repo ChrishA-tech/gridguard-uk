@@ -1,0 +1,611 @@
+{
+  "config": {
+    "slug": "gridguard-uk",
+    "name": "GridGuard UK",
+    "domain": "Housing retrofit",
+    "subtitle": "Explore how retrofit savings estimates change across neighbourhood scenarios.",
+    "units": "\u00a3 annual absolute error",
+    "baseline": "Simple estimate",
+    "candidate": "Scenario-adjusted estimate",
+    "stress": "Cold homes",
+    "groups": [
+      "Urban",
+      "Suburban",
+      "Rural"
+    ],
+    "note": "The replay compares two estimates against a simulated annual outcome. It does not estimate realised household savings or validate treatment effects. EPC-based targeting and constrained budget allocation remain separate work."
+  },
+  "provenance": "Deterministic synthetic scenarios",
+  "cases": [
+    {
+      "period": 1,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 124.97874,
+      "candidate": 9.14859
+    },
+    {
+      "period": 2,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 132.23486,
+      "candidate": 39.11751
+    },
+    {
+      "period": 3,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 26.71427,
+      "candidate": 17.91689
+    },
+    {
+      "period": 4,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 102.75617,
+      "candidate": 109.2253
+    },
+    {
+      "period": 5,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 10.18289,
+      "candidate": 95.74333
+    },
+    {
+      "period": 6,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 141.47173,
+      "candidate": 6.35683
+    },
+    {
+      "period": 7,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 42.56011,
+      "candidate": 42.56011
+    },
+    {
+      "period": 8,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 185.66995,
+      "candidate": 185.66995
+    },
+    {
+      "period": 9,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 296.50065,
+      "candidate": 296.50065
+    },
+    {
+      "period": 10,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 60.91253,
+      "candidate": 26.45886
+    },
+    {
+      "period": 11,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 82.22017,
+      "candidate": 102.27893
+    },
+    {
+      "period": 12,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 72.11318,
+      "candidate": 76.17127
+    },
+    {
+      "period": 13,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 62.26577,
+      "candidate": 5.80256
+    },
+    {
+      "period": 14,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 130.91812,
+      "candidate": 19.20032
+    },
+    {
+      "period": 15,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 11.76746,
+      "candidate": 33.71882
+    },
+    {
+      "period": 16,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 2.46886,
+      "candidate": 2.46886
+    },
+    {
+      "period": 17,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 66.28613,
+      "candidate": 66.28613
+    },
+    {
+      "period": 18,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 73.2921,
+      "candidate": 73.2921
+    },
+    {
+      "period": 19,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 15.94342,
+      "candidate": 115.98325
+    },
+    {
+      "period": 20,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 88.41249,
+      "candidate": 57.29909
+    },
+    {
+      "period": 21,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 131.60733,
+      "candidate": 4.93055
+    },
+    {
+      "period": 22,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 211.71837,
+      "candidate": 152.15059
+    },
+    {
+      "period": 23,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 41.70729,
+      "candidate": 24.64247
+    },
+    {
+      "period": 24,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 8.63194,
+      "candidate": 2.97614
+    },
+    {
+      "period": 25,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 77.34069,
+      "candidate": 77.34069
+    },
+    {
+      "period": 26,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 41.84266,
+      "candidate": 41.84266
+    },
+    {
+      "period": 27,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 94.04943,
+      "candidate": 94.04943
+    },
+    {
+      "period": 28,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 180.84634,
+      "candidate": 194.88752
+    },
+    {
+      "period": 29,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 171.78981,
+      "candidate": 87.51817
+    },
+    {
+      "period": 30,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 210.59023,
+      "candidate": 64.54659
+    },
+    {
+      "period": 31,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 89.6754,
+      "candidate": 19.82825
+    },
+    {
+      "period": 32,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 5.27407,
+      "candidate": 9.64669
+    },
+    {
+      "period": 33,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 66.29425,
+      "candidate": 29.14459
+    },
+    {
+      "period": 34,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 161.01185,
+      "candidate": 161.01185
+    },
+    {
+      "period": 35,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 143.84001,
+      "candidate": 143.84001
+    },
+    {
+      "period": 36,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 55.57646,
+      "candidate": 55.57646
+    },
+    {
+      "period": 37,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 117.61466,
+      "candidate": 23.87848
+    },
+    {
+      "period": 38,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 13.56003,
+      "candidate": 59.23894
+    },
+    {
+      "period": 39,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 77.62953,
+      "candidate": 17.16846
+    },
+    {
+      "period": 40,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 89.07277,
+      "candidate": 1.09576
+    },
+    {
+      "period": 41,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 167.55291,
+      "candidate": 86.5281
+    },
+    {
+      "period": 42,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 107.20304,
+      "candidate": 19.69362
+    },
+    {
+      "period": 43,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 32.51739,
+      "candidate": 32.51739
+    },
+    {
+      "period": 44,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 53.78693,
+      "candidate": 53.78693
+    },
+    {
+      "period": 45,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 45.96927,
+      "candidate": 45.96927
+    },
+    {
+      "period": 46,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 87.33924,
+      "candidate": 20.98469
+    },
+    {
+      "period": 47,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 24.03859,
+      "candidate": 14.1168
+    },
+    {
+      "period": 48,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 117.13976,
+      "candidate": 22.78901
+    },
+    {
+      "period": 49,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 102.35939,
+      "candidate": 97.23838
+    },
+    {
+      "period": 50,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 76.11678,
+      "candidate": 10.50651
+    },
+    {
+      "period": 51,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 73.68267,
+      "candidate": 70.15447
+    },
+    {
+      "period": 52,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 112.95755,
+      "candidate": 112.95755
+    },
+    {
+      "period": 53,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 34.90974,
+      "candidate": 34.90974
+    },
+    {
+      "period": 54,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 3.8497,
+      "candidate": 3.8497
+    },
+    {
+      "period": 55,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 93.24728,
+      "candidate": 56.45284
+    },
+    {
+      "period": 56,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 42.39427,
+      "candidate": 19.84428
+    },
+    {
+      "period": 57,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 154.89924,
+      "candidate": 62.55266
+    },
+    {
+      "period": 58,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 114.13095,
+      "candidate": 10.96372
+    },
+    {
+      "period": 59,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 10.78643,
+      "candidate": 97.6898
+    },
+    {
+      "period": 60,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 100.88221,
+      "candidate": 12.63167
+    },
+    {
+      "period": 61,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 174.09187,
+      "candidate": 174.09187
+    },
+    {
+      "period": 62,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 46.26861,
+      "candidate": 46.26861
+    },
+    {
+      "period": 63,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 3.41599,
+      "candidate": 3.41599
+    },
+    {
+      "period": 64,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 100.93016,
+      "candidate": 67.0823
+    },
+    {
+      "period": 65,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 218.74898,
+      "candidate": 141.3363
+    },
+    {
+      "period": 66,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 113.27862,
+      "candidate": 2.5217
+    },
+    {
+      "period": 67,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 40.71468,
+      "candidate": 24.65452
+    },
+    {
+      "period": 68,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 127.90909,
+      "candidate": 105.78401
+    },
+    {
+      "period": 69,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 198.25067,
+      "candidate": 84.44994
+    },
+    {
+      "period": 70,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 123.41104,
+      "candidate": 123.41104
+    },
+    {
+      "period": 71,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 123.79764,
+      "candidate": 123.79764
+    },
+    {
+      "period": 72,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 0.21567,
+      "candidate": 0.21567
+    },
+    {
+      "period": 73,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 24.16078,
+      "candidate": 32.39895
+    },
+    {
+      "period": 74,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 114.75305,
+      "candidate": 0.59559
+    },
+    {
+      "period": 75,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 42.11001,
+      "candidate": 10.19763
+    },
+    {
+      "period": 76,
+      "group": "Urban",
+      "scenario": "Cold homes",
+      "baseline": 22.09941,
+      "candidate": 19.68235
+    },
+    {
+      "period": 77,
+      "group": "Suburban",
+      "scenario": "Cold homes",
+      "baseline": 65.91574,
+      "candidate": 25.39389
+    },
+    {
+      "period": 78,
+      "group": "Rural",
+      "scenario": "Cold homes",
+      "baseline": 197.45942,
+      "candidate": 70.43739
+    },
+    {
+      "period": 79,
+      "group": "Urban",
+      "scenario": "Feed degraded",
+      "baseline": 85.66466,
+      "candidate": 85.66466
+    },
+    {
+      "period": 80,
+      "group": "Suburban",
+      "scenario": "Feed degraded",
+      "baseline": 161.48859,
+      "candidate": 161.48859
+    },
+    {
+      "period": 81,
+      "group": "Rural",
+      "scenario": "Feed degraded",
+      "baseline": 61.77066,
+      "candidate": 61.77066
+    },
+    {
+      "period": 82,
+      "group": "Urban",
+      "scenario": "Typical",
+      "baseline": 51.34637,
+      "candidate": 141.30071
+    },
+    {
+      "period": 83,
+      "group": "Suburban",
+      "scenario": "Typical",
+      "baseline": 119.17513,
+      "candidate": 45.88323
+    },
+    {
+      "period": 84,
+      "group": "Rural",
+      "scenario": "Typical",
+      "baseline": 157.76487,
+      "candidate": 10.63957
+    }
+  ],
+  "baseline_mean": 91.06961630952381,
+  "candidate_mean": 60.656352261904765
+}

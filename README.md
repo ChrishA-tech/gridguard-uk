@@ -63,3 +63,8 @@ ruff check src tests
 
 - [docs/ERROR_ANALYSIS_REPORT.md](docs/ERROR_ANALYSIS_REPORT.md) — Spatial CV metrics, global SHAP drivers, slice RMSE/MAE, residual bias, and 90% conformal coverage.
 - [docs/SKILLS_MATRIX.md](docs/SKILLS_MATRIX.md) — 300-skill engineering, econometrics, conformal ML, causal inference, RAG, and MLOps capability matrix mapped to `gridguard-uk`.
+
+
+## Interactive decision replay
+
+Explore [the dashboard](https://chrisha-tech.github.io/replay/?project=gridguard-uk) or reproduce the [scenario benchmark and error analysis](replay/README.md). The bundled replay uses synthetic scenarios.
